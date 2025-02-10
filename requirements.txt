@@ -1,0 +1,11 @@
+torch==2.4.1
+torchvision==0.19.1
+tqdm==4.66.5
+numpy==2.1.1
+opencv-python==4.10.0.84
+pillow==10.4.0
+tensorboardX==2.6.2.2
+scikit-image==0.25.1
+matplotlib==3.10.0
+statsmodels==0.14.4
+h5py==3.12.1

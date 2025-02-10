@@ -1,0 +1,95 @@
+{
+    "name": "rgbir_naip2naip_25_128_sb_1.00",
+    "phase": "train", // train or val
+    "gpu_ids": [
+        0
+    ],
+    "path": { //set the path
+        "log": "logs",
+        "tb_logger": "tb_logger",
+        "results": "results",
+        "checkpoint": "checkpoint"
+        // "resume_state": "experiments/rgbir_pl2naip_25_128_sb_1.00_241205_172738/checkpoint/I560000_E16"
+    },
+    "datasets": {
+        "train": {
+            "name": "PL_NAIP",
+            "mode": "HR",
+            "dataroot": "datasets/RAW/SB_NAIP_RGBIR_2020.tif:1234;datasets/RAW/SB_NAIP_RGBIR_2020.tif:1234",
+            "l_resolution": 25,
+            "r_resolution": 128,
+            "datatype": "img",
+            "split_train_ratio": 1.00,
+            "batch_size": 32,
+            "num_workers": 128,
+            "use_shuffle": true,
+            "data_len": -1
+        },
+        "val": {
+            "name": "PL_NAIP",
+            "mode": "HR",
+            "dataroot": "datasets/RAW/SB_NAIP_RGBIR_2020.tif:1234;datasets/RAW/SB_NAIP_RGBIR_2020.tif:1234",
+            "l_resolution": 25,
+            "r_resolution": 128,
+            "datatype": "img",
+            "split_train_ratio": 1.00,
+            "data_len": 16
+        }
+    },
+    "model": {
+        "which_model_G": "sr3", // use the ddpm or sr3 network structure
+	"compile": true,
+        "finetune_norm": false,
+        "unet": {
+            "in_channel": 8,
+            "out_channel": 4,
+            "inner_channel": 64,
+            "channel_multiplier": [
+                1,
+                2,
+                4,
+                8,
+                8
+            ],
+            "attn_res": [
+                16
+            ],
+            "res_blocks": 2,
+            "dropout": 0.2
+        },
+        "beta_schedule": { // use munual beta_schedule for acceleration
+            "train": {
+                "schedule": "linear",
+                "n_timestep": 2000,
+                "linear_start": 1e-6,
+                "linear_end": 1e-2
+            },
+            "val": {
+                "schedule": "linear",
+                "n_timestep": 2000,
+                "linear_start": 1e-6,
+                "linear_end": 1e-2
+            }
+        },
+        "diffusion": {
+            "image_size": 128,
+            "channels": 4, //sample channel
+            "conditional": true // unconditional generation or unconditional generation(super_resolution)
+        }
+    },
+    "train": {
+        "n_iter": 1000000,
+        "val_freq": 5e4,
+        "save_checkpoint_freq": 5e5,
+        "print_freq": 200,
+        "optimizer": {
+            "type": "adam",
+            "lr": 1e-4
+        },
+        "ema_scheduler": { // not used now
+            "step_start_ema": 5000,
+            "update_ema_every": 1,
+            "ema_decay": 0.9999
+        }
+    }
+}
